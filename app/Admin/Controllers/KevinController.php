@@ -45,7 +45,7 @@ class KevinController extends Controller
         $form->setAction('/admin/kevin/save');
 
         $form->text('name', '名称');
-        $form->multipleImage('img_url', '图片');
+        $form->multipleFile('img_url', '图片');
         $form->datetime('created_at');
 
         return $content
