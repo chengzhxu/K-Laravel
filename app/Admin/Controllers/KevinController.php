@@ -16,8 +16,9 @@ class KevinController extends Controller
     public function list(Content $content){
         $grid = new Grid(new MyPic());
 
+        $grid->model()->orderBy('id','desc');
         $grid->quickSearch('name');
-        $grid->column('id', 'ID')->sortable('desc');
+        $grid->column('id', 'ID')->sortable();
         $grid->column('name', '名称');
 
         $grid->column('url', '图片')
