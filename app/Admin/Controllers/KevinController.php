@@ -57,7 +57,6 @@ class KevinController extends Controller
     public function save(Request $request){
         $files = $request->file('img_url');
         foreach ($files as $file){
-            print_r($file);
             $fileName = $this->upload($file);
             if ($fileName){
                 $pic = new MyPic();
