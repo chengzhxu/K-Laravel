@@ -86,7 +86,7 @@ class KevinController extends Controller
 
         // 2.是否符合文件类型 getClientOriginalExtension 获得文件后缀名
         $fileExtension = $file->getClientOriginalExtension();
-        if(! in_array($fileExtension, ['png', 'jpg', 'gif'])) {
+        if(! in_array($fileExtension, ['png', 'jpg', 'gif', 'jpeg', 'mp4', 'avi', '3gp', 'rmvb'])) {
             return false;
         }
 
