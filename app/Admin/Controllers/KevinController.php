@@ -4,10 +4,11 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\MyPic;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
-use Encore\Admin\Widgets\Table;
+use Encore\Admin\Show;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,8 +30,10 @@ class KevinController extends Controller
 
         $grid->column('created_at', '创建时间');
 
+        $grid->paginate(20);
+
         $grid->actions(function ($actions) {
-            $actions->disableEdit();
+//            $actions->disableEdit();
         });
 
         return $content
@@ -78,7 +81,7 @@ class KevinController extends Controller
     /**
      * 验证文件是否合法
      */
-    public function upload($file, $disk='public') {
+    private function upload($file, $disk='public') {
         // 1.是否上传成功
         if (!$file->isValid()) {
             return false;
@@ -106,6 +109,75 @@ class KevinController extends Controller
         if (Storage::disk($disk)->put($fileName, file_get_contents($tmpFile)) ){
             return Storage::url($fileName);
         }
+    }
+
+
+    public function show($id, Content $content){
+        return $content->header('MyPic')
+            ->description('详情')
+            ->body(Admin::show(MyPic::findOrFail($id), function (Show $show) {
+
+                $show->id('ID');
+                $show->name('标题');
+//                $image = img_url($show->model()->image);
+//                $show->image('图片')->default($image);
+//                $show->url('图片')->as(function($url){
+//                    return '<img src="'.$url.'" style="width:100%;height:100%;">';
+//                });
+                $show->url('图片')
+                    ->image('', 100, 100)
+                    ->modal('IMG', function ($url) {
+                        return '<img src="'.$url.'" style="width:100%;height:100%;">';
+                    });
+
+                $show->created_at();
+            }));
+    }
+
+    public function update($id, Request $request){
+        $pic = MyPic::findOrFail($id);
+        $pic['name'] = $request['name'] ? $request['name'] : '未命名_'.time();
+
+        if(!$pic->update()){
+            return '保存失败';
+        }
+
+        return redirect('/admin/kevin/');
+    }
+
+
+    public function edit($id, Content $content){
+//        return $content->header('MyPic')
+//            ->description('编辑')
+//            ->body(Admin::show(MyPic::findOrFail($id), function (Grid\Actions\Edit $show) {
+//
+//                $show->id('ID');
+//                $show->name('标题');
+//            }));
+
+        return Admin::content(function (Content $content) use ($id) {
+
+            $content->header('header');
+            $content->description('description');
+
+            $content->body($this->form()->edit($id));
+        });
+    }
+
+
+
+    protected function form()
+    {
+        return Admin::form(MyPic::class, function (Form $form) {
+
+            $form->display('id', 'ID');
+            $form->text('name', '标题');
+//            $form->file('url', '图片');
+            $form->image('url', '图片');
+
+            $form->display('created_at', 'Created At');
+            $form->display('updated_at', 'Updated At');
+        });
     }
 
 }
