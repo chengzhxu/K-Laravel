@@ -11,6 +11,22 @@
 |
 */
 
+use App\Http\Controllers\ChatController;
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+Route::get('index', [ChatController::class, 'index']);
+//$router->get('/sfe/user/user_info', 'SalesEffectiveController@findUser');
+
+$router->get('/index', function () use ($router) {
+    return [
+        'code' => 200,
+        'data' => [
+            'project' => 'K-Laravel',
+            'php'     => PHP_VERSION,
+        ]
+    ];
 });
